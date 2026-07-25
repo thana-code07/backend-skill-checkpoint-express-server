@@ -67,29 +67,32 @@ Update the connection string to match your PostgreSQL credentials and database n
 Create a `quora` database and the following tables:
 
 ```sql
-CREATE TABLE questions (
-  id          SERIAL PRIMARY KEY,
-  title       VARCHAR NOT NULL,
-  description TEXT NOT NULL,
-  category    VARCHAR NOT NULL
+CREATE TABLE IF NOT EXISTS questions (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    category VARCHAR(255)
 );
 
-CREATE TABLE answers (
-  id          SERIAL PRIMARY KEY,
-  question_id INT NOT NULL REFERENCES questions(id),
-  content     VARCHAR(300) NOT NULL
+
+CREATE TABLE IF NOT EXISTS answers (
+    id SERIAL PRIMARY KEY,
+    question_id INTEGER REFERENCES questions(id) ON DELETE CASCADE,
+    content TEXT
 );
 
-CREATE TABLE question_votes (
-  id          SERIAL PRIMARY KEY,
-  question_id INT NOT NULL REFERENCES questions(id),
-  vote        INT NOT NULL
+
+CREATE TABLE IF NOT EXISTS question_votes (
+    id SERIAL PRIMARY KEY,
+    question_id INTEGER REFERENCES questions(id) ON DELETE CASCADE,
+    vote INTEGER CHECK (vote = 1 OR vote = -1)
 );
 
-CREATE TABLE answer_votes (
-  id        SERIAL PRIMARY KEY,
-  answer_id INT NOT NULL REFERENCES answers(id),
-  vote      INT NOT NULL
+
+CREATE TABLE IF NOT EXISTS answer_votes (
+    id SERIAL PRIMARY KEY,
+    answer_id INTEGER REFERENCES answers(id) ON DELETE CASCADE,
+    vote INTEGER CHECK (vote = 1 OR vote = -1)
 );
 ```
 
@@ -107,30 +110,30 @@ Base URL: `http://localhost:4000`
 
 ### Health check
 
-| Method | Endpoint | Description |
-| ------ | -------- | ----------- |
-| GET | `/test` | Returns a message confirming the API is working. |
+| Method | Endpoint | Description                                      |
+| ------ | -------- | ------------------------------------------------ |
+| GET    | `/test`  | Returns a message confirming the API is working. |
 
 ### Questions
 
-| Method | Endpoint | Description |
-| ------ | -------- | ----------- |
-| GET | `/questions` | Get all questions. |
-| GET | `/questions/search?title=&category=` | Search questions by `title` and/or `category` (at least one required). |
-| GET | `/questions/:questionID` | Get a single question by ID. |
-| POST | `/questions` | Create a question. Body: `{ title, description, category }`. |
-| PUT | `/questions/:questionID` | Update a question. Body: `{ title, description, category }`. |
-| DELETE | `/questions/:questionID` | Delete a question. |
-| POST | `/questions/:questionID/vote` | Vote on a question. Body: `{ vote: 1 | -1 }`. |
+| Method | Endpoint                             | Description                                                            |
+| ------ | ------------------------------------ | ---------------------------------------------------------------------- | ------ |
+| GET    | `/questions`                         | Get all questions.                                                     |
+| GET    | `/questions/search?title=&category=` | Search questions by `title` and/or `category` (at least one required). |
+| GET    | `/questions/:questionID`             | Get a single question by ID.                                           |
+| POST   | `/questions`                         | Create a question. Body: `{ title, description, category }`.           |
+| PUT    | `/questions/:questionID`             | Update a question. Body: `{ title, description, category }`.           |
+| DELETE | `/questions/:questionID`             | Delete a question.                                                     |
+| POST   | `/questions/:questionID/vote`        | Vote on a question. Body: `{ vote: 1                                   | -1 }`. |
 
 ### Answers
 
-| Method | Endpoint | Description |
-| ------ | -------- | ----------- |
-| GET | `/questions/:questionID/answers` | Get all answers for a question. |
-| POST | `/questions/:questionID/answers` | Create an answer. Body: `{ content }` (max 300 chars). |
-| DELETE | `/questions/:questionID/answers` | Delete all answers for a question. |
-| POST | `/questions/:questionID/answers/:answerID/vote` | Vote on an answer. Body: `{ vote: 1 | -1 }`. |
+| Method | Endpoint                                        | Description                                            |
+| ------ | ----------------------------------------------- | ------------------------------------------------------ | ------ |
+| GET    | `/questions/:questionID/answers`                | Get all answers for a question.                        |
+| POST   | `/questions/:questionID/answers`                | Create an answer. Body: `{ content }` (max 300 chars). |
+| DELETE | `/questions/:questionID/answers`                | Delete all answers for a question.                     |
+| POST   | `/questions/:questionID/answers/:answerID/vote` | Vote on an answer. Body: `{ vote: 1                    | -1 }`. |
 
 ## Request & Validation Rules
 
