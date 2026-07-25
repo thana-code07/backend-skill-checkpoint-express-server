@@ -104,6 +104,8 @@ npm start
 
 The server runs on **http://localhost:4000**. Visit `GET /test` to confirm it's up.
 
+Interactive API docs (Swagger UI) are available at **http://localhost:4000/api-docs**.
+
 ## API Endpoints
 
 Base URL: `http://localhost:4000`
@@ -113,6 +115,7 @@ Base URL: `http://localhost:4000`
 | Method | Endpoint | Description                                      |
 | ------ | -------- | ------------------------------------------------ |
 | GET    | `/test`  | Returns a message confirming the API is working. |
+| GET    | `/api-docs` | Interactive Swagger UI documentation.                |
 
 ### Questions
 
